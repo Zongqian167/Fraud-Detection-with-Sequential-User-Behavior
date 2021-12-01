@@ -41,4 +41,31 @@ Since there exists some missing values which might influence our final performan
 
 For each application, we now have a sequence of words that represent the sequential behavior  during applications. In order to keep the hidden information in the sequence behavior, we  concatenate all the words during the same application together with a white space in between  and form lines of words, which we call sequences. Now we have built up our own language  model, where each application is represented as a sequence of words. 
 
-/image/Figure 3 Label Sequence to be fed into SGT model.png
+<p align="center">
+<img src="images/Figure3.png" width="800" hight=”30“>
+</p>
+
+
+After separately generating SGT features for each of the sequence variables, we want to capture the interactive relationship between them. There are 5 sequence variables(pname, stay_time, lag_time, pid, sid), and the most important one is pname, so we only consider its interaction with the rest of the variables. 
+
+<p align="center">
+<img src="/images/Figure4.png" width="760" height="150" />
+</p>
+
+A combination example can be seen in Figure 5. After combination, the number of all possible values for the combined variable will be the product of the number of all possible values for the two single variables. For this example, the number of all possible values for pname*stay_time will be 3\*3=9. 
+
+<p align="center">
+<img src="/images/Figure5.png" width="560" height="63" />
+</p>
+  
+We have five variables with 11,10,10,3,3 alphabets each. Since the SGT model is space quadratic in alphabet size, simply joining five variables will generate (11\*10\*10\*3\*3)^2=9801000 SGT features, which is too large because of RAM limitation. We choose to combine label sequence variables in pairs (see Table 3) so the generated SGT features are reduced to 12100 + 12100 + 1089 + 1089 = 26378 columns together. 
+
+| Single Variables | Alphabet Size | Combined Variables | Alphabet Size | SGT dimensions |
+|--|--|--|--|--|
+| pname | 11 |  |  |  |
+| stay_time | 10 | pname\*stay_time  | 11\*10 | 12100 |
+| lagg | 10 | pname\*lagg | 11\*10 | 12100 |
+| pid | 3 | pname\*lagg | 11\*3 | 1089 |
+| sid | 3 | pname\*sid | 11\*3 | 1089 |
+
+In order to overcome the RAM limitation problem, we choose to only capture the interaction relationship in pairs. However, the generated SGT features are still too large to feed into a classifier, so the PCA method was applied for each of these 4 combined sequences to reduce dimensions. But the problem is it’s even too hard to apply the PCA method since the generated SGT features are too large(will take up too much memory and days to run). We find the stay_time and lagg are actually continuous variables and previous groups transform them into categorical variables with 10 categories. Therefore, we can reduce the categories, i.e. from 10 to 5, before using PCA so that the number of generated SGT dimensions can be reduced.
