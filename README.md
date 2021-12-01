@@ -41,4 +41,4 @@ Since there exists some missing values which might influence our final performan
 
 For each application, we now have a sequence of words that represent the sequential behavior  during applications. In order to keep the hidden information in the sequence behavior, we  concatenate all the words during the same application together with a white space in between  and form lines of words, which we call sequences. Now we have built up our own language  model, where each application is represented as a sequence of words. 
 
-/Figure 3 Label Sequence to be fed into SGT model.png
+/image/Figure 3 Label Sequence to be fed into SGT model.png
